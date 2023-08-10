@@ -47,7 +47,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'Firstwebapp1234567'
+          app-name: 'Firstwebapp123456789'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1024A089C4AC435D9BED7224E8F8251C }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C916BC83070F42B5BB093309579E5639 }}
           package: '*.war'
