@@ -185,7 +185,7 @@
 
     </dependencies>
 
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
 
     <build>
