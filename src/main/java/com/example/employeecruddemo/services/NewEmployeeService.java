@@ -1,18 +1,17 @@
-package com.example.capstone.services;
+package com.example.azureemployeedeployment.services;
 
 
-import com.example.capstone.model.NewEmployee;
-import com.example.capstone.repository.NewEmployeeRepository;
-import com.example.capstone.repository.UserRepository;
+
+
+import com.example.azureemployeedeployment.model.NewEmployee;
+import com.example.azureemployeedeployment.repository.NewEmployeeRepository;
+import com.example.azureemployeedeployment.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -26,14 +25,6 @@ public class NewEmployeeService {
     private JdbcTemplate jdbcTemplate;
 
 
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        NewEmployee newEmployee = userRepository.findByUsername(username);
-        if (newEmployee == null) {
-            throw new UsernameNotFoundException("User not found");
-        }
-        return new org.springframework.security.core.userdetails.User(newEmployee.getUsername(), newEmployee.getPassword(),
-                new ArrayList<>());
-    }
 
 
 
@@ -78,6 +69,11 @@ public class NewEmployeeService {
 
     public NewEmployee registerNewEmployee(NewEmployee newEmployee) {
         return newEmployeeRepository.save(newEmployee);
+    }
+
+
+    public List<NewEmployee> findByNameContaining(String name) {
+        return newEmployeeRepository.findByNameContaining(name);
     }
 
 
