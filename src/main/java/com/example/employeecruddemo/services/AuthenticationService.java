@@ -1,8 +1,8 @@
-package com.example.capstone.services;
+package com.example.azureemployeedeployment.services;
 
+import com.example.azureemployeedeployment.model.NewEmployee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.example.capstone.model.NewEmployee;
 
 @Service
 public class AuthenticationService {
