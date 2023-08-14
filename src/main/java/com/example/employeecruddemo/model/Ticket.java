@@ -1,6 +1,7 @@
-package com.example.capstone.model;
+package com.example.azureemployeedeployment.model;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 @Entity
