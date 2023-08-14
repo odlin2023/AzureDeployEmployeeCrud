@@ -1,21 +1,18 @@
-package com.example.capstone.controller;
+package com.example.azureemployeedeployment.controller;
 
 
-import com.example.capstone.model.Message;
-import com.example.capstone.model.NewEmployee;
-import com.example.capstone.model.Report;
-import com.example.capstone.model.Ticket;
-import com.example.capstone.repository.NewEmployeeRepository;
-import com.example.capstone.repository.TicketRepository;
-import com.example.capstone.services.*;
+import com.example.azureemployeedeployment.model.Message;
+import com.example.azureemployeedeployment.model.NewEmployee;
+import com.example.azureemployeedeployment.model.Report;
+import com.example.azureemployeedeployment.model.Ticket;
+import com.example.azureemployeedeployment.repository.NewEmployeeRepository;
+import com.example.azureemployeedeployment.repository.TicketRepository;
+import com.example.azureemployeedeployment.services.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -39,9 +36,6 @@ public class TicketController {
     private final NewEmployeeService newEmployeeService;
 
     @Autowired
-    private final CurrentUserService currentUserService;
-
-    @Autowired
     private final AuthenticationService authenticationService;
 
     @Autowired
@@ -51,12 +45,11 @@ public class TicketController {
 
 
     @Autowired
-    public TicketController(TicketService ticketService, TicketRepository ticketRepository, NewEmployeeService newEmployeeService, ReportService reportService, CurrentUserService currentUserService, AuthenticationService authenticationService, NewEmployeeRepository newEmployeeRepository) {
+    public TicketController(TicketService ticketService, TicketRepository ticketRepository, NewEmployeeService newEmployeeService, ReportService reportService, AuthenticationService authenticationService, NewEmployeeRepository newEmployeeRepository) {
         this.ticketService = ticketService;
         this.ticketRepository = ticketRepository;
         this.newEmployeeService=newEmployeeService;
         this.reportService = reportService;
-        this.currentUserService = currentUserService;
         this.authenticationService = authenticationService;
         this.newEmployeeRepository = newEmployeeRepository;
     }
@@ -131,18 +124,6 @@ public class TicketController {
         }
     }
 
-   @MessageMapping("/message")
-    @SendTo("/topic/messages")
-    public Message send(Message message) throws Exception {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String senderUsername = authentication.getName();
-        Ticket sender = ticketRepository.findByName(senderUsername);
-
-        message.setSender(sender.getName());
-        message.setTime(LocalDateTime.now().toString());
-
-        return message;
-    }
 
     @GetMapping("/chat")
     public String getChatPage() {
@@ -247,42 +228,25 @@ public class TicketController {
 
 
 
-    @GetMapping("/employeeDashboard")
-    public String getDashboardInfo(Model model, HttpServletRequest request, Principal principal) {
-        NewEmployee newEmployee = null;
-        String name = null;
 
-        // Get the newEmployee from the session, if possible
-        HttpSession session = request.getSession();
-        if (session != null) {
-            newEmployee = (NewEmployee) session.getAttribute("newEmployee");
-            if (newEmployee != null) {
-                name = newEmployee.getName();
-            }
-        }
 
-        // If no session or no newEmployee in session, try getting newEmployee from Principal
-        if (newEmployee == null && principal != null) {
-            name = principal.getName();
-            newEmployee = newEmployeeRepository.findByUsername(name);
-        }
+    @GetMapping("/employeeDashboard/{employeeName}")
+    public String getEmployeeDashboard(@PathVariable String employeeName, Model model) {
+        // Fetch tickets for the employee
+        List<Ticket> tickets = ticketService.getTicketsByEmployeeName(employeeName);
 
-        if (newEmployee == null) {
-            // The user is not logged in. Redirect to login page.
-            return "redirect:/login";
-        }
-
-        List<Ticket> tickets = ticketRepository.findByNewEmployee_NameContaining(name);
-        model.addAttribute("newEmployee", newEmployee);
         model.addAttribute("tickets", tickets);
-        model.addAttribute("role", newEmployee.getRole());  // Add the role to the model
-        return "employeeDashboard";
+
+        return "employeeDashboard"; // Or any other view name you want to use
     }
+
+
+
 
 
     @PostMapping("/login")
     public String loginSubmit(@ModelAttribute NewEmployee newEmployee, HttpServletRequest request, RedirectAttributes redirectAttributes) {
-        NewEmployee existing = newEmployeeService.findByUsername(newEmployee.getUsername());
+        NewEmployee existing = newEmployeeRepository.findByUsername(newEmployee.getUsername());
 
         if (existing != null && existing.getPassword().equals(newEmployee.getPassword())) {
             // Log the user's roles
@@ -297,14 +261,17 @@ public class TicketController {
                 System.out.println("Redirecting to /tickets");
                 return "redirect:/tickets";
             } else if (role.equals("USER")) {
-                System.out.println("Redirecting to /employeeDashboard");
-                return "redirect:/employeeDashboard";
+                // Redirect to the employee's dashboard with their name
+                return "redirect:/employeeDashboard/" + existing.getName();
             }
         }
 
         redirectAttributes.addFlashAttribute("error", "Invalid username or password");
         return "redirect:/login";
     }
+
+
+
 
     @GetMapping("/admin")
     public String getAdminDashboard(Model model, HttpServletRequest request, Principal principal) {
