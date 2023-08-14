@@ -1,7 +1,6 @@
-package com.example.capstone.repository;
+package com.example.azureemployeedeployment.repository;
 
-import com.example.capstone.model.NewEmployee;
-import com.example.capstone.model.Ticket;
+import com.example.azureemployeedeployment.model.Ticket;
 import jakarta.persistence.NamedQuery;
 import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -36,6 +35,13 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     void deleteByIdIn(List<Long> ids);
     @Query("SELECT t FROM Ticket t WHERE t.newEmployee.name LIKE %:name%")
     List<Ticket> findByNewEmployee_NameContaining(@Param("name") String name);
+
+    List<Ticket> findByContentContaining(String name);
+
+    @Query("SELECT t FROM Ticket t WHERE t.name = :employeeName")
+    List<Ticket> findByEmployeeName(String employeeName);
+
+
 
 
 
