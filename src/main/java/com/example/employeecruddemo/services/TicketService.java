@@ -1,10 +1,12 @@
-package com.example.capstone.services;
+package com.example.azureemployeedeployment.services;
 
 
-import com.example.capstone.model.NewEmployee;
-import com.example.capstone.model.Ticket;
-import com.example.capstone.repository.NewEmployeeRepository;
-import com.example.capstone.repository.TicketRepository;
+
+
+import com.example.azureemployeedeployment.model.NewEmployee;
+import com.example.azureemployeedeployment.model.Ticket;
+import com.example.azureemployeedeployment.repository.NewEmployeeRepository;
+import com.example.azureemployeedeployment.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -80,6 +82,11 @@ public class TicketService {
     
     public List<NewEmployee> getEmployeesByRole(String role) {
         return newEmployeeRepository.findByRoleContains(role);
+    }
+
+
+    public List<Ticket> getTicketsByEmployeeName(String employeeName) {
+        return ticketRepository.findByEmployeeName(employeeName);
     }
 
 
