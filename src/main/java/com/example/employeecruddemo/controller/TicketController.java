@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-@Controller
+@RestController
 public class TicketController {
     @Autowired
     private final TicketService ticketService;
